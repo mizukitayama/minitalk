@@ -20,17 +20,20 @@ void sig_handler(int signum, siginfo_t *info, void *context)
 	static int i = 0;
 
 	bin_to_char(signum, &chr);
-	if (++i == 8)
+	if (i == 7)
 	{
-		if (!chr)
-		{
-			return;
-		}
 		i = 0;
 		ft_printf("%c", chr);
 		chr = 0;
+		usleep(1000);
+		kill(info->si_pid, SIGUSR1);
 	}
-	kill(info->si_pid, SIGUSR2);
+	else
+	{
+		usleep(1000);
+		kill(info->si_pid, SIGUSR2);
+		i++;
+	}
 }
 
 int main(void)

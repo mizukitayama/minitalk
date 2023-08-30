@@ -9,7 +9,14 @@ int response = 0;
 
 void sig_handler(int signum, siginfo_t *info, void *context)
 {
+	static int i = 0;
 	response = 1;
+	if (signum == SIGUSR2)
+		i++;
+	else if (signum == SIGUSR1)
+	{
+		i = 0;
+	}
 }
 
 void char_to_byte(int pid, char c)
@@ -20,7 +27,7 @@ void char_to_byte(int pid, char c)
 
 	while (bit_i >= 0) {
 		itr = 0;
-		response = 0;
+		ft_printf("bit_i = %d\n", bit_i);
 		if ((c >> bit_i) & 1) {
 			kill(pid, SIGUSR1);
 		}
@@ -28,13 +35,13 @@ void char_to_byte(int pid, char c)
 			kill(pid, SIGUSR2);
 		}
 		while (response == 0) {
-			pause();
-			if (itr == 50) {
+			usleep(100);
+			if (itr == 5000) {
 				exit(1);
 			}
 			itr++;
-			usleep(100);
 		}
+		response = 0;
 		bit_i--;
 	}
 }
@@ -55,6 +62,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	while (argv[2][argv_i]) {
+		ft_printf("%c",argv[2][argv_i]);
 		char_to_byte(atoi(argv[1]), argv[2][argv_i]);
 		argv_i++;
 	}
